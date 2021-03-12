@@ -1,2 +1,7 @@
-# lametric-stargazers
-A LaMetric app to show stargazer count for a repository
+# lametric-apps
+
+A collection of LaMetric apps
+
+## stargazers
+
+This app shows stargazer count for a repository
