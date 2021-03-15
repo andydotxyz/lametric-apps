@@ -1,0 +1,54 @@
+'use strict';
+const https = require('https');
+
+exports.handler = async (event) => {
+    let owner = "fyne-io";
+    let repo = 'fyne';
+
+    if (event.owner) {
+        owner = event.owner;
+    }
+    
+    if (event.repo) {
+        repo = event.repo;
+    }
+    
+    let count = 1337;
+    let path = `/repos/${owner}/${repo}`;
+
+    let dataString = '';
+    const response = await new Promise((resolve, reject) => {
+        const req = https.get({hostname : 'api.github.com',
+            path :path,
+            headers : {
+                'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1521.3 Safari/537.36'
+            },
+        },
+        function(res) {
+            res.on('data', chunk => {
+                dataString += chunk;
+            });
+            res.on('end', () => {
+                count = JSON.parse(dataString).stargazers_count;
+
+                let frame = {
+                    text: ""+count,
+                    icon: 44281,
+                };
+
+                let frames = [frame];
+                resolve({frames});
+            });
+        });
+
+        req.on('error', (e) => {
+            reject({
+                statusCode: 500,
+                body: 'Something went wrong'
+            });
+        });
+    });
+
+    return response;
+};
+
